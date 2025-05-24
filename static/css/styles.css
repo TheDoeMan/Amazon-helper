@@ -1,0 +1,54 @@
+/* Additional styles to complement the Bootstrap theme */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+#htmlInput {
+    font-family: monospace;
+    font-size: 0.875rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Spinner styling for loading state */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Make the form sections stand out a bit more */
+.form-section {
+    border-left: 3px solid var(--bs-info);
+    padding-left: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Required field indicator */
+.form-label.required:after {
+    content: "*";
+    color: var(--bs-danger);
+    margin-left: 0.25rem;
+}
+
+/* Highlight fields that need attention */
+.form-control:focus {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-info-rgb), 0.25);
+}

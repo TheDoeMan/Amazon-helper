@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Information Extractor</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md bg-dark-subtle mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">Amazon Order Tools</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Shipping Extractor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/asin-counter">ASIN Counter</a>
+                    </li>
+                </ul>
+                <div class="ms-auto">
+                    <a href="/download-app" class="btn btn-outline-primary">Download App for Local Use</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>HTML Shipping Information Extractor</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Paste the HTML containing shipping information below. The system will extract customer address details and allow you to generate a shipping CSV.</p>
+                        
+                        <div id="inputSection">
+                            <div class="mb-3">
+                                <label for="htmlInput" class="form-label">HTML Input</label>
+                                <textarea class="form-control" id="htmlInput" rows="10" placeholder="Paste HTML content here..."></textarea>
+                            </div>
+                            <button id="extractBtn" class="btn btn-extract">Extract Information</button>
+                        </div>
+                        
+                        <div id="loadingSection" class="text-center my-5 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Extracting shipping information...</p>
+                        </div>
+                        
+                        <div id="errorSection" class="alert alert-danger mt-3 d-none" role="alert">
+                            <h5>Error</h5>
+                            <p id="errorMessage"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shipping Information Form (initially hidden) -->
+        <div id="shippingForm" class="d-none">
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card main-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4>Shipping Information</h4>
+                            <button id="resetBtn" class="btn btn-outline-secondary btn-sm">Start Over</button>
+                        </div>
+                        <div class="card-body">
+                            <form id="csvForm" method="POST" action="/generate-csv">
+                                <!-- Ship To Information (Editable) - Moved to top -->
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <div class="card-section-ship-to p-3 mb-3">
+                                          <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex align-items-center">
+                                                <h5 class="section-header-ship-to mb-0 me-3">Ship To Information</h5>
+                                                <span id="orderCount" class="badge order-badge rounded-pill d-none">0 orders found</span>
+                                            </div>
+                                            
+                                            <!-- Address Selector for Multiple Addresses -->
+                                            <div id="addressSelectorContainer" class="d-none">
+                                                <div class="d-flex align-items-center">
+                                                    <button type="button" id="prevAddressBtn" class="nav-arrow me-2">
+                                                        <i class="bi bi-chevron-left"></i>
+                                                    </button>
+                                                    
+                                                    <div class="d-flex flex-column">
+                                                        <div class="d-flex align-items-center mb-1">
+                                                            <label for="addressSelector" class="form-label me-2 mb-0">Select Address:</label>
+                                                            <select id="addressSelector" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                                                <!-- Options will be added dynamically via JavaScript -->
+                                                            </select>
+                                                        </div>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="form-check custom-checkbox me-3">
+                                                                <input class="form-check-input" type="checkbox" id="mergeOrdersCheckbox" name="merge_orders">
+                                                                <label class="form-check-label" for="mergeOrdersCheckbox">
+                                                                    Merge all orders in one CSV
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check custom-checkbox">
+                                                                <input class="form-check-input" type="checkbox" id="sameDimensionsCheckbox" name="same_dimensions" checked>
+                                                                <label class="form-check-label" for="sameDimensionsCheckbox">
+                                                                    Apply same dimensions to all
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <button type="button" id="nextAddressBtn" class="nav-arrow ms-2">
+                                                        <i class="bi bi-chevron-right"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="ToName" class="form-label">To Name*</label>
+                                                <input type="text" class="form-control" id="ToName" name="ToName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="PhoneTo" class="form-label">Phone</label>
+                                                <input type="text" class="form-control" id="PhoneTo" name="PhoneTo">
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label for="Street1To" class="form-label">Street 1*</label>
+                                                <input type="text" class="form-control" id="Street1To" name="Street1To" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="CompanyTo" class="form-label">Company</label>
+                                                <input type="text" class="form-control" id="CompanyTo" name="CompanyTo">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="Street2To" class="form-label">Street 2</label>
+                                                <input type="text" class="form-control" id="Street2To" name="Street2To">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="CityTo" class="form-label">City*</label>
+                                                <input type="text" class="form-control" id="CityTo" name="CityTo" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="StateTo" class="form-label">State*</label>
+                                                <input type="text" class="form-control" id="StateTo" name="StateTo" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="ZipTo" class="form-label">Zip Code*</label>
+                                                <input type="text" class="form-control" id="ZipTo" name="ZipTo" required>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label for="order_id" class="form-label">Order ID</label>
+                                                <input type="text" class="form-control" id="order_id" name="order_id">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Package Information -->
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <div class="card-section-package p-3 mb-3">
+                                            <h5 class="section-header-package">Package Information</h5>
+                                            <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <label for="Weight" class="form-label">Weight (lbs)*</label>
+                                                <input type="number" class="form-control" id="Weight" name="Weight" min="0.1" step="0.1" value="4" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="length" class="form-label">Length (in)*</label>
+                                                <input type="number" class="form-control" id="length" name="length" min="1" step="0.1" value="4" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="width" class="form-label">Width (in)*</label>
+                                                <input type="number" class="form-control" id="width" name="width" min="1" step="0.1" value="7" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="height" class="form-label">Height (in)*</label>
+                                                <input type="number" class="form-control" id="height" name="height" min="1" step="0.1" value="5" required>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label for="description" class="form-label">Description</label>
+                                                <input type="text" class="form-control" id="description" name="description" value="misc">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Shipping From Information (Read-only) -->
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <div class="card-section-ship-from p-3 mb-3">
+                                            <h5 class="section-header-ship-from">Ship From Information (Fixed)</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">From Name</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.FromName }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Phone</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.PhoneFrom }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Street 1</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.Street1From }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Company</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.CompanyFrom }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Street 2</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.Street2From }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">City</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.CityFrom }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">State</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.StateFrom }}" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Postal Code</label>
+                                                    <input type="text" class="form-control" value="{{ ship_from.PostalCodeFrom }}" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12 d-grid">
+                                        <button type="submit" class="btn btn-generate btn-lg">Generate CSV</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="container mt-5 mb-3">
+        <div class="text-center">
+            <p class="text-muted">&copy; 2025 Shipping Information Extractor</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

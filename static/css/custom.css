@@ -1,0 +1,167 @@
+/* Custom theme colors */
+:root {
+  --accent-orange: #ff8a4c;
+  --accent-purple: #a78bfa;
+  --accent-blue: #60a5fa;
+  --accent-teal: #5eead4;
+  --accent-pink: #f472b6;
+  --accent-green: #4ade80;
+  --accent-yellow: #fbbf24;
+  --card-bg-dark: #2d3748;
+  --card-bg-darker: #252d3d;
+  --body-bg: #1a202c;
+}
+
+/* Colorful section cards */
+.card-section-ship-to {
+  border-left: 4px solid var(--accent-orange);
+  border-radius: 8px;
+  background-color: rgba(255, 138, 76, 0.05);
+  transition: all 0.2s ease;
+}
+
+.card-section-ship-to:hover {
+  background-color: rgba(255, 138, 76, 0.1);
+}
+
+.card-section-package {
+  border-left: 4px solid var(--accent-teal);
+  border-radius: 8px;
+  background-color: rgba(94, 234, 212, 0.05);
+  transition: all 0.2s ease;
+}
+
+.card-section-package:hover {
+  background-color: rgba(94, 234, 212, 0.1);
+}
+
+.card-section-ship-from {
+  border-left: 4px solid var(--accent-purple);
+  border-radius: 8px;
+  background-color: rgba(167, 139, 250, 0.05);
+  transition: all 0.2s ease;
+}
+
+.card-section-ship-from:hover {
+  background-color: rgba(167, 139, 250, 0.1);
+}
+
+/* Colorful section headers */
+.section-header-ship-to {
+  color: var(--accent-orange);
+  font-weight: 600;
+}
+
+.section-header-package {
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+.section-header-ship-from {
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+/* Global Background */
+body {
+  background: linear-gradient(135deg, var(--body-bg) 0%, #364258 100%);
+  background-attachment: fixed;
+}
+
+/* Card styles */
+.main-card {
+  background-color: var(--card-bg-dark);
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.main-card .card-header {
+  background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+  border-bottom: none;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  color: white;
+  font-weight: bold;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Progress bar and stats */
+.extraction-stats {
+  background-color: var(--card-bg-darker);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Navigation and controls */
+.nav-arrow {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--card-bg-darker);
+  color: var(--bs-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.nav-arrow:hover {
+  background-color: var(--accent-blue);
+  color: white;
+}
+
+/* Input focus states */
+.form-control:focus, .form-select:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+}
+
+/* Button styles */
+.btn-extract {
+  background-color: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: white;
+}
+
+.btn-extract:hover {
+  background-color: #f97316;
+  border-color: #f97316;
+  color: white;
+}
+
+.btn-generate {
+  background-color: var(--accent-teal);
+  border-color: var(--accent-teal);
+  color: black;
+}
+
+.btn-generate:hover {
+  background-color: #14b8a6;
+  border-color: #14b8a6;
+  color: black;
+}
+
+/* Custom checkboxes */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.custom-checkbox .form-check-input:checked {
+  background-color: var(--accent-orange);
+  border-color: var(--accent-orange);
+}
+
+/* Order badge */
+.order-badge {
+  background-color: var(--accent-orange);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
